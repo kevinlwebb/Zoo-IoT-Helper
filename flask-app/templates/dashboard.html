@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-clearmin.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/roboto.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/material-design.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/small-n-flat.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css" integrity="sha384-QokYePQSOwpBDuhlHOsX0ymF6R/vLk/UQVz3WHa6wygxI5oGTmDTv8wahFOSspdm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/c3.min.css') }}">
+        <style type="text/css">
+            .btnf {
+              background-color: DodgerBlue; /* Blue background */
+              border: none; /* Remove borders */
+              color: white; /* White text */
+              padding: 12px 16px; /* Some padding */
+              font-size: 16px; /* Set a font size */
+              cursor: pointer; /* Mouse pointer on hover */
+            }
+
+            /* Darker background on mouse-over */
+            .btnf:hover {
+              background-color: RoyalBlue;
+            }
+
+            .boff {
+              background-color: Gray
+            }
+            .boff:hover {
+              background-color: DarkGray
+            }
+
+        </style>
+        <title>Home</title>
+    </head>
+    <body class="cm-no-transition cm-2-navbar">
+        <div id="cm-menu">
+            <nav class="cm-navbar cm-navbar-primary">
+                <div class="cm-flex"><a href="{{ url_for('index') }}" class="cm-logo"></a></div>
+                <div class="btn btn-primary md-menu-white" data-toggle="cm-menu"></div>
+            </nav>
+            <div id="cm-menu-content">
+                <div id="cm-menu-items-wrapper">
+                    <div id="cm-menu-scroller">
+                        <ul class="cm-menu-items">
+                            <li class="active"><a href="{{ url_for('index') }}" class="sf-dashboard">Dashboard</a></li>
+                            <li><a href="{{ url_for('users') }}" class="sf-profile-group">Users</a></li>
+                            <li><a href="{{ url_for('log') }}" class="sf-file-text">Log</a></li>
+                            <li><a href="{{ url_for('animals') }}" class="sf-cat">Animals</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <header id="cm-header">
+            <nav class="cm-navbar cm-navbar-primary">
+                <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
+                <div class="cm-flex">
+                    <h1>Dashboard</h1> 
+                    <form id="cm-search" action="index.html" method="get">
+                        <input type="search" name="q" autocomplete="off" placeholder="Search...">
+                    </form>
+                </div>
+                <div class="pull-right">
+                    <div id="cm-search-btn" class="btn btn-primary md-search-white" data-toggle="cm-search"></div>
+                </div>
+                <div class="dropdown pull-right">
+                    <button class="btn btn-primary md-notifications-white" data-toggle="dropdown"> <span class="label label-danger">23</span> </button>
+                    <div class="popover cm-popover bottom">
+                        <div class="arrow"></div>
+                        <div class="popover-content">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading text-overflow">
+                                        <i class="fa fa-fw fa-envelope"></i> Nunc volutpat aliquet magna.
+                                    </h4>
+                                    <p class="list-group-item-text text-overflow">Pellentesque tincidunt mollis scelerisque. Praesent vel blandit quam.</p>
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading">
+                                        <i class="fa fa-fw fa-envelope"></i> Aliquam orci lectus
+                                    </h4>
+                                    <p class="list-group-item-text">Donec quis arcu non risus sagittis</p>
+                                </a>
+                                <a href="#" class="list-group-item">
+                                    <h4 class="list-group-item-heading">
+                                        <i class="fa fa-fw fa-warning"></i> Holy guacamole !
+                                    </h4>
+                                    <p class="list-group-item-text">Best check yo self, you're not looking too good.</p>
+                                </a>
+                            </div>
+                            <div style="padding:10px"><a class="btn btn-success btn-block" href="#">Show me more...</a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown pull-right">
+                    <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
+                    <ul class="dropdown-menu">
+                        <li class="disabled text-center">
+                            <a style="cursor:default;"><strong>{{ current_user.username }}</strong></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+        </header>
+        <div id="global">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 1</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">Activated</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fas fa-battery-full"></i></button>
+                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 2</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">Deactivated</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fas fa-battery-half"></i></button>
+                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 3</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">Activated</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fas fa-battery-half"></i></button>
+                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 4</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">No Battery</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fas fa-battery-empty"></i></button>
+                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 5</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">Activated</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fa fa-battery-full"></i></button>
+                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Feeder 6</div>
+                            <div class="panel-body text-center">
+                                <h1 class="font-weight-bold">Not Connected</h1>
+                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
+                                <button class="btn btnf"><i class="fa fa-battery-full"></i></button>
+                                <button class="btn btnf boff"><i class="fas fa-wifi"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="panel panel-default">
+                    <div class="panel-heading">C3 Bars</div>
+                    <div class="panel-body">
+                        <div id="d1-c5" style="height:320px"></div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">C3 Splines</div>
+                    <div class="panel-body">
+                        <div id="d1-c4" style="height:320px"></div>
+                    </div>
+                </div>
+                <div class="alert alert-info shadowed" role="alert"> <i class="fa fa-fw fa-info-circle"></i> C3.js chart library by Masayuki Tanaka (MIT): <a href="http://c3js.org/">http://c3js.org/</a> </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Native progress bars</div>
+                    <table class="table table-bordered">
+                        <tr>
+                            <td style="white-space:nowrap">Nemo enim ipsam</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger" style="width:3%"></div>
+                                </div>
+                            </td>
+                            <td>3%</td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap">Neque porro quisquam</td>
+                            <td style="width:100%">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-warning" style="width:9%"></div>
+                                </div>
+                            </td>
+                            <td>9%</td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap">Et quoniam inedia</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:12%"></div>
+                                </div>
+                            </td>
+                            <td>12%</td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap">Catoni anteponas</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:38%"></div>
+                                </div>
+                            </td>
+                            <td>38%</td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap">Haec dum oriens diu perferret</td>
+                            <td style="width:100%">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:47%"></div>
+                                </div>
+                            </td>
+                            <td>47%</td>
+                        </tr>
+                        <tr>
+                            <td style="white-space:nowrap">Nam libero tempore</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:73%"></div>
+                                </div>
+                            </td>
+                            <td>73%</td>
+                        </tr>
+                    </table>
+                </div>
+            -->
+            </div>
+            <footer class="cm-footer"><span class="pull-left">Connected as {{ current_user.username }}</span><span class="pull-right">&copy; KEVIN WEBB</span></footer>
+        </div>
+        <script src="{{ url_for('static', filename='js/lib/jquery-2.1.3.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.mousewheel.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.cookie.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/fastclick.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/clearmin.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/lib/d3.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/lib/c3.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/demo/dashboard.js') }}"></script>
+    </body>
+</html>
