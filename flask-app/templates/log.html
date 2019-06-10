@@ -25,6 +25,7 @@
                             <li><a href="{{ url_for('users') }}" class="sf-profile-group">Users</a></li>
                             <li class="active"><a href="{{ url_for('log') }}" class="sf-file-text">Log</a></li>
                             <li><a href="{{ url_for('animals') }}" class="sf-cat">Animals</a></li>
+                            <li><a href="{{ url_for('schedule') }}" class="sf-calendar-clock">Schedule</a></li>
                         </ul>
                     </div>
                 </div>
@@ -96,8 +97,6 @@
             <div class="container-fluid">
 
                 <div class="panel panel-default">
-                    <div class="panel-heading">Log</div>
-                    <div class="panel-body">
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -116,11 +115,10 @@
                             </tbody>
                         </table>
 
-                    </div>
                 </div>
 
             </div>
-            <footer class="cm-footer"><span class="pull-left">Connected as John Smith</span><span class="pull-right">&copy; PAOMEDIA SARL</span></footer>
+            <footer class="cm-footer"><span class="pull-left">Connected as {{ current_user.username }}</span><span class="pull-right">&copy; KEVIN WEBB</span></footer>
         </div>
         <script src="{{ url_for('static', filename='js/lib/jquery-2.1.3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/jquery.mousewheel.min.js') }}"></script>

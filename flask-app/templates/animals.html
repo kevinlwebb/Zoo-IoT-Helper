@@ -14,6 +14,22 @@
             input{
                 margin: 3px;
             }
+            .button-big {
+              background-color: #fff; /* Green */
+              border: 1px solid #ddd; /* Green */
+              color: white;
+              padding: 15px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              -webkit-transition-duration: 0.4s; /* Safari */
+              transition-duration: 0.4s;
+            }
+            .button-big:hover {
+              background-color: #f7f7f7; /* Green */
+              color: white;
+            }
         </style>
     </head>
     <body class="cm-no-transition cm-2-navbar">
@@ -30,6 +46,7 @@
                             <li><a href="{{ url_for('users') }}" class="sf-profile-group">Users</a></li>
                             <li><a href="{{ url_for('log') }}" class="sf-file-text">Log</a></li>
                             <li class="active"><a href="{{ url_for('animals') }}" class="sf-cat">Animals</a></li>
+                            <li><a href="{{ url_for('schedule') }}" class="sf-calendar-clock">Schedule</a></li>
                         </ul>
                     </div>
                 </div>
@@ -101,56 +118,61 @@
             <div class="container-fluid">
 
                 <div class="panel panel-default">
-                    <div class="panel-heading">Animals</div>
-                    <div class="panel-body">
                         <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Name</th>
-                                    <th>Update</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for animal in animals %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
                                     <tr>
-                                      <td style="text-align: -webkit-center;">
-                                        {% if animal.typ == 'Elephant' %}
-                                          <div id="test" style="content: url({{url_for('static', filename='elephant.svg')}}); width: 50px; height: 50px;"></div>
-                                        {% elif animal.typ == 'Monkey' %}
-                                          <div id="test" style="content: url({{url_for('static', filename='monkey.svg')}}); width: 50px; height: 50px;"></div>
-                                        {% elif animal.typ == 'Giraffe' %}
-                                          <div id="test" style="content: url({{url_for('static', filename='giraffe.svg')}}); width: 50px; height: 50px;"></div>
-                                        {% endif %}
-                                      </td>
-                                      <td>
-                                        {{animal.name}}
-                                      </td>
-                                      <td>
-                                        <form method="POST" action="./updateanimal" style="display: inline">
-                                          <input type="hidden" value="{{animal.name}}" name="oldname">
-                                          <input type="text" value="{{animal.name}}" name="newname">
-                                          <input type="submit" value="Update">
-                                        </form>
-                                      </td>
-                                      <td>
-                                        <form method="POST" action="./deleteanimal" style="display: inline">
-                                          <input type="hidden" value="{{animal.name}}" name="name">
-                                          <input type="submit" value="Delete">
-                                        </form>
-                                      </td>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Animal Type</th>
+                                        <th>Update</th>
+                                        <th>Delete</th>
                                     </tr>
-                                {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for animal in animals %}
+                                        <tr>
+                                          <td style="text-align: -webkit-center;">
+                                            {% if animal.typ == 'Elephant' %}
+                                              <div id="test" style="content: url({{url_for('static', filename='elephant.svg')}}); width: 50px; height: 50px;"></div>
+                                            {% elif animal.typ == 'Monkey' %}
+                                              <div id="test" style="content: url({{url_for('static', filename='monkey.svg')}}); width: 50px; height: 50px;"></div>
+                                            {% elif animal.typ == 'Giraffe' %}
+                                              <div id="test" style="content: url({{url_for('static', filename='giraffe.svg')}}); width: 50px; height: 50px;"></div>
+                                            {% endif %}
+                                          </td>
+                                          <td>
+                                            {{animal.name}}
+                                          </td>
+                                          <td>
+                                            {{animal.typ}}
+                                          </td>
+                                          <td>
+                                            <form method="POST" action="./updateanimal" style="display: inline">
+                                              <input type="hidden" value="{{animal.name}}" name="oldname">
+                                              <input type="text" value="{{animal.name}}" name="newname">
+                                              <input type="submit" value="Update">
+                                            </form>
+                                          </td>
+                                          <td>
+                                            <form method="POST" action="./deleteanimal" style="display: inline">
+                                              <input type="hidden" value="{{animal.name}}" name="name">
+                                              <input type="submit" value="Delete">
+                                            </form>
+                                          </td>
+                                        </tr>
+                                    {% endfor %}
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+
                 </div>
 
-
+                <div>
+                    <button class="button-big"><a href="{{ url_for('addanimal') }}">Add Animal</a></button>
+                </div>
+                <!--
                 <div class="panel panel-default">
                     <div class="panel-heading">Add Animal</div>
                     <div class="panel-body">
@@ -166,6 +188,7 @@
                         </form>
                     </div>
                 </div>
+            -->
 
             </div>
             <footer class="cm-footer"><span class="pull-left">Connected as {{ current_user.username }}</span><span class="pull-right">&copy; KEVIN WEBB</span></footer>

@@ -1,13 +1,16 @@
+#!/usr/bin/env python
+
 from flask import Flask, render_template, flash, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.fields.html5 import DateTimeLocalField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Required
 import os
 import logging
 
@@ -16,7 +19,9 @@ from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship 
 
-
+import json
+import time
+import socket
 
 #logger = logging.basicConfig(filename='zoo.log', format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
 handler = logging.FileHandler("zoo.log")
@@ -33,6 +38,23 @@ app = Flask(__name__)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
+feeders = {1:{
+	"schedule":[],
+	"wifi":"connected",
+	"activation":"Activated"
+},
+2:{
+	"schedule":[],
+	"wifi":"connected",
+	"activation":"Activated"
+},
+3:{
+	"schedule":[],
+	"wifi":"not connected",
+	"activation":"Deactivated"
+}
+}
 
 #####
 
@@ -79,6 +101,8 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
@@ -105,11 +129,20 @@ class AnimalForm(FlaskForm):
         if animal is not None:
             raise ValidationError('Animal name already exists.')
 
+class TimeForm(FlaskForm):
+    #time = StringField('Animal Name', validators=[DataRequired()])
+    date = DateTimeLocalField('Which date is your favorite?', format='%m/%d/%y')
+    #feeder = SelectField(u'Animal Type', choices=[('Elephant', 'Elephant'), ('Monkey', 'Monkey'), ('Giraffe', 'Giraffe')])
+    submit = SubmitField('Add')
+
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
+    first_name = db.Column(db.String(120))
+    last_name = db.Column(db.String(120))
     tier = db.Column(db.String(120))
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
@@ -144,7 +177,7 @@ def create_tables():
     db.create_all()
     user = User.query.filter_by(username='admin').first()
     if user is None:
-        user = User(username='admin', email='kevinlwebb03@gmail.com',tier='admin')
+        user = User(username='admin', email='kevinlwebb03@gmail.com',first_name='admin',last_name='zoo',tier='Admin')
         user.set_password('admin1234')
         db.session.add(user)
         db.session.commit()
@@ -166,7 +199,7 @@ def remove_session(ex=None):
 @app.route('/index')
 @login_required
 def index():
-    return render_template('dashboard.html', title='Home')
+    return render_template('dashboard.html', title='Home',feeder=feeders)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -200,7 +233,7 @@ def register():
     #    return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, tier='normal')
+        user = User(username=form.username.data, email=form.email.data, first_name=form.first_name.data,last_name=form.last_name.data,tier='General')
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -227,6 +260,44 @@ def log():
             events.append(line)
 
     return render_template("log.html", events=events)
+
+@app.route('/schedule')
+@login_required
+def schedule():
+
+    return render_template("schedule.html", feeder = feeders)
+
+@app.route('/addschedule', methods=['GET', 'POST'])
+@login_required
+def addschedule():
+    form = TimeForm()
+    print(form.validate_on_submit())
+    if request.form:
+    	print(request)
+    	print("hi")
+    	print(request.form['date'].replace("T"," "))
+    	in_date = request.form['date'].replace("T"," ")
+    	datetime_object = datetime.strptime(in_date, '%Y-%m-%d %H:%M')
+    	print(datetime_object)
+    	feeders[1]["schedule"].append(datetime_object)
+    	return redirect(url_for('schedule'))
+    	#%m/%d/%y
+    	#return redirect(url_for('schedule'))
+
+    if form.validate_on_submit():
+        #animal = Animal(name=form.name.data, typ=form.typ.data)
+        #session.add(animal)
+        #session.commit()
+        #flash(animal.name +' is now a registered user!')
+        #logger.info('%s registered new user: %s', current_user.username, form.name.data)
+
+        #feeders[1]["schedule"].append(datetime.now() + timedelta(minutes=1))
+		#print(feeders[1]["schedule"])
+        
+        print(form.date.data)
+
+        return redirect(url_for('schedule'))
+    return render_template('addtime.html', title='Register', form=form)
 
 
 @app.route("/delete", methods=["POST"])
@@ -297,7 +368,42 @@ def addanimal():
         return redirect(url_for('animals'))
     return render_template('addanimal.html', title='Register', form=form)
 
+@app.route("/addtime", methods=["POST"])
+@login_required
+def addtime():
+	try:
+		print(datetime.now())
+		print(datetime.now() + timedelta(minutes=1))
+		global feeders
+		feeders[1]["schedule"].append(datetime.now() + timedelta(minutes=1))
+		print(feeders[1]["schedule"])
+
+		# Create a socket object 
+		s = socket.socket()
+
+		# Define the port on which you want to connect 
+		port = 12345
+
+		# connect to the server on local computer 
+		s.connect(('127.0.0.1', port))
+
+		# send a thank you message to the client.  
+		s.send(feeders[1]["schedule"][-1].strftime("%m/%d/%Y, %H:%M:%S").encode())
+
+		# close the connection 
+		s.close()
+
+	except Exception as e:
+		print("Couldn't add time")
+		print(e)
+	return str(datetime.now() + timedelta(minutes=1))
+
+@app.route("/getschedule", methods=["GET"])
+@login_required
+def getschedule():
+	global feeders
+	return json.dumps(feeders)
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+if __name__ == "__main__": 
+	app.run(host='0.0.0.0', debug=True)

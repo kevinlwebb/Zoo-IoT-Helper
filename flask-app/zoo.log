@@ -11,3 +11,11 @@ INFO:2019-05-01 12:00:22,153:admin registered new user: Tina
 INFO:2019-05-02 08:26:38,541:admin deleted animal: Tina
 INFO:2019-05-03 16:23:32,655:admin deleted animal: turnup
 INFO:2019-05-03 16:26:58,538:admin registered new user: Puttr
+INFO:2019-05-22 22:31:19,574:admin registered new user: kevtt
+INFO:2019-05-22 22:31:22,817:admin deleted user: kevinw
+INFO:2019-05-22 22:31:23,660:admin deleted user: ket
+INFO:2019-05-22 22:36:25,913:admin registered new user: kett
+INFO:2019-05-22 22:42:33,135:admin registered new user: keviww
+INFO:2019-05-22 22:45:50,834:admin deleted user: keviww
+INFO:2019-05-22 22:46:05,432:admin registered new user: kett
+INFO:2019-06-02 14:42:31,582:admin deleted animal: 

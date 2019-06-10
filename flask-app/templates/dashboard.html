@@ -50,6 +50,7 @@
                             <li><a href="{{ url_for('users') }}" class="sf-profile-group">Users</a></li>
                             <li><a href="{{ url_for('log') }}" class="sf-file-text">Log</a></li>
                             <li><a href="{{ url_for('animals') }}" class="sf-cat">Animals</a></li>
+                            <li><a href="{{ url_for('schedule') }}" class="sf-calendar-clock">Schedule</a></li>
                         </ul>
                     </div>
                 </div>
@@ -119,14 +120,14 @@
         </header>
         <div id="global">
             <div class="container-fluid">
+                <!--
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">Feeder 1</div>
                             <div class="panel-body text-center">
                                 <h1 class="font-weight-bold">Activated</h1>
-                                <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fas fa-battery-full"></i></button>
+                                <button class="btn btnf" onclick="addTime()"><i class="fa fa-calendar"></i></button>
                                 <button class="btn btnf"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
@@ -137,7 +138,6 @@
                             <div class="panel-body text-center">
                                 <h1 class="font-weight-bold">Deactivated</h1>
                                 <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fas fa-battery-half"></i></button>
                                 <button class="btn btnf"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
@@ -148,7 +148,6 @@
                             <div class="panel-body text-center">
                                 <h1 class="font-weight-bold">Activated</h1>
                                 <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fas fa-battery-half"></i></button>
                                 <button class="btn btnf"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
@@ -157,9 +156,8 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Feeder 4</div>
                             <div class="panel-body text-center">
-                                <h1 class="font-weight-bold">No Battery</h1>
+                                <h1 class="font-weight-bold">Activated</h1>
                                 <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fas fa-battery-empty"></i></button>
                                 <button class="btn btnf"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
@@ -170,7 +168,6 @@
                             <div class="panel-body text-center">
                                 <h1 class="font-weight-bold">Activated</h1>
                                 <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fa fa-battery-full"></i></button>
                                 <button class="btn btnf"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
@@ -179,88 +176,70 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Feeder 6</div>
                             <div class="panel-body text-center">
-                                <h1 class="font-weight-bold">Not Connected</h1>
+                                <h1 class="font-weight-bold">Deactivated</h1>
                                 <button class="btn btnf"><i class="fa fa-calendar"></i></button>
-                                <button class="btn btnf"><i class="fa fa-battery-full"></i></button>
                                 <button class="btn btnf boff"><i class="fas fa-wifi"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--
-                <div class="panel panel-default">
-                    <div class="panel-heading">C3 Bars</div>
-                    <div class="panel-body">
-                        <div id="d1-c5" style="height:320px"></div>
+-->
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="col-xs-12">
+                            <div class="row">
+                                {% for i in range(feeder|length): %}
+                                    <div class="col-xs-6">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Feeder {{i+1}}</div>
+                                            <div class="panel-body text-center">
+                                                <h1 class="font-weight-bold">{{feeder[i+1].activation}}</h1>
+                                                <button type="button" class="btn btnf"data-toggle="modal" data-target="#exampleModalLong"><i class="fa fa-calendar"></i></button>
+                                                <button class="btn btnf"><i class="fas fa-wifi"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Scheduled Feed</div>
+                                <div class="panel-body text-center">
+                                <div id="myDiv">
+                                {% for i in feeder[1].schedule: %}
+                                    <div>Feeder 1: {{i}}</div>
+                                {% endfor %}
+                                </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">C3 Splines</div>
-                    <div class="panel-body">
-                        <div id="d1-c4" style="height:320px"></div>
-                    </div>
-                </div>
-                <div class="alert alert-info shadowed" role="alert"> <i class="fa fa-fw fa-info-circle"></i> C3.js chart library by Masayuki Tanaka (MIT): <a href="http://c3js.org/">http://c3js.org/</a> </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Native progress bars</div>
-                    <table class="table table-bordered">
-                        <tr>
-                            <td style="white-space:nowrap">Nemo enim ipsam</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-danger" style="width:3%"></div>
-                                </div>
-                            </td>
-                            <td>3%</td>
-                        </tr>
-                        <tr>
-                            <td style="white-space:nowrap">Neque porro quisquam</td>
-                            <td style="width:100%">
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-warning" style="width:9%"></div>
-                                </div>
-                            </td>
-                            <td>9%</td>
-                        </tr>
-                        <tr>
-                            <td style="white-space:nowrap">Et quoniam inedia</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar" style="width:12%"></div>
-                                </div>
-                            </td>
-                            <td>12%</td>
-                        </tr>
-                        <tr>
-                            <td style="white-space:nowrap">Catoni anteponas</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar" style="width:38%"></div>
-                                </div>
-                            </td>
-                            <td>38%</td>
-                        </tr>
-                        <tr>
-                            <td style="white-space:nowrap">Haec dum oriens diu perferret</td>
-                            <td style="width:100%">
-                                <div class="progress">
-                                    <div class="progress-bar" style="width:47%"></div>
-                                </div>
-                            </td>
-                            <td>47%</td>
-                        </tr>
-                        <tr>
-                            <td style="white-space:nowrap">Nam libero tempore</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar" style="width:73%"></div>
-                                </div>
-                            </td>
-                            <td>73%</td>
-                        </tr>
-                    </table>
-                </div>
-            -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add Time</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="addTime()">Add Time</button>
+      </div>
+    </div>
+  </div>
+</div>
+
             </div>
             <footer class="cm-footer"><span class="pull-left">Connected as {{ current_user.username }}</span><span class="pull-right">&copy; KEVIN WEBB</span></footer>
         </div>
@@ -273,5 +252,13 @@
         <script src="{{ url_for('static', filename='js/lib/d3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/lib/c3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/demo/dashboard.js') }}"></script>
+        <script>
+        function addTime() {
+            $.post( "/addtime", {
+                
+            });
+            $("#myDiv").load(location.href + " #myDiv");
+        }
+        </script>
     </body>
 </html>
