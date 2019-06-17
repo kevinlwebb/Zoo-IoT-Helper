@@ -63,29 +63,23 @@
                     <div id="cm-search-btn" class="btn btn-primary md-search-white" data-toggle="cm-search"></div>
                 </div>
                 <div class="dropdown pull-right">
-                    <button class="btn btn-primary md-notifications-white" data-toggle="dropdown"> <span class="label label-danger">23</span> </button>
+                    <button class="btn btn-primary md-notifications-white" data-toggle="dropdown"> <span class="label label-danger"><span id="notif_num">{{notifications}}</span></span> </button>
                     <div class="popover cm-popover bottom">
                         <div class="arrow"></div>
                         <div class="popover-content">
-                            <div class="list-group">
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading text-overflow">
-                                        <i class="fa fa-fw fa-envelope"></i> Nunc volutpat aliquet magna.
-                                    </h4>
-                                    <p class="list-group-item-text text-overflow">Pellentesque tincidunt mollis scelerisque. Praesent vel blandit quam.</p>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading">
-                                        <i class="fa fa-fw fa-envelope"></i> Aliquam orci lectus
-                                    </h4>
-                                    <p class="list-group-item-text">Donec quis arcu non risus sagittis</p>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <h4 class="list-group-item-heading">
-                                        <i class="fa fa-fw fa-warning"></i> Holy guacamole !
-                                    </h4>
-                                    <p class="list-group-item-text">Best check yo self, you're not looking too good.</p>
-                                </a>
+                            <div id="notif" class="list-group">
+
+                                {% for i in range(complete|length): %}
+                                    {% for time in complete[i+1]: %}
+                                    <a href="#" class="list-group-item">
+                                        <h4 class="list-group-item-heading">
+                                            <i class="fa fa-fw fa-envelope"></i> Feeder {{i+1}} completed its scheduled feed at {{time}}.
+                                        </h4>
+                                        <p class="list-group-item-text text-overflow">You may go to the Schedule page to check for the remaining times.</p>
+                                    </a>
+                                    {% endfor %}
+                                {% endfor %}
+
                             </div>
                             <div style="padding:10px"><a class="btn btn-success btn-block" href="#">Show me more...</a></div>
                         </div>
@@ -137,7 +131,11 @@
                                             {{time}}
                                         </td>
                                         <td>
-                                            Button
+                                            <form method="POST" action="./deletetime" style="display: inline">
+                                              <input type="hidden" value="{{i+1}}" name="feeder_id">
+                                              <input type="hidden" value="{{time}}" name="time">
+                                              <input type="submit" value="Delete">
+                                            </form>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -168,5 +166,14 @@
         <script src="{{ url_for('static', filename='js/lib/d3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/lib/c3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/demo/dashboard.js') }}"></script>
+        <script>
+        function reloadNotifications(){
+            $("#notif").load(location.href + " #notif");
+            $("#notif_num").load(location.href + " #notif_num");
+        }
+        setInterval(function(){
+            reloadNotifications() // this will run after every 5 seconds
+        }, 5000);
+        </script>
     </body>
 </html>

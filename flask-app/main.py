@@ -3,7 +3,7 @@
 from flask import Flask, render_template, flash, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
@@ -131,7 +131,7 @@ class AnimalForm(FlaskForm):
 
 class TimeForm(FlaskForm):
     #time = StringField('Animal Name', validators=[DataRequired()])
-    date = DateTimeLocalField('Which date is your favorite?', format='%m/%d/%y')
+    date = DateTimeLocalField('Select date and time next scheduled feed', format='%m/%d/%y')
     #feeder = SelectField(u'Animal Type', choices=[('Elephant', 'Elephant'), ('Monkey', 'Monkey'), ('Giraffe', 'Giraffe')])
     submit = SubmitField('Add')
 
@@ -199,8 +199,8 @@ def remove_session(ex=None):
 @app.route('/index')
 @login_required
 def index():
-    return render_template('dashboard.html', title='Home',feeder=feeders)
-
+	completed,notifications = getcompletedschedule()
+	return render_template('dashboard.html', title='Home',feeder=feeders,complete=completed,notifications=notifications)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -248,8 +248,8 @@ def users():
     users = None
     users = User.query.all()
     db.session.commit()
-
-    return render_template("users.html", users=users)
+    completed,notifications = getcompletedschedule()
+    return render_template("users.html", users=users,complete=completed,notifications=notifications)
 
 @app.route('/log')
 @login_required
@@ -258,14 +258,14 @@ def log():
     with open("zoo.log", 'r') as f:
         for line in f:
             events.append(line)
-
-    return render_template("log.html", events=events)
+    completed,notifications = getcompletedschedule()
+    return render_template("log.html", events=events,complete=completed,notifications=notifications)
 
 @app.route('/schedule')
 @login_required
 def schedule():
-
-    return render_template("schedule.html", feeder = feeders)
+	completed,notifications = getcompletedschedule()
+	return render_template("schedule.html", feeder = feeders,complete=completed,notifications=notifications)
 
 @app.route('/addschedule', methods=['GET', 'POST'])
 @login_required
@@ -273,12 +273,8 @@ def addschedule():
     form = TimeForm()
     print(form.validate_on_submit())
     if request.form:
-    	print(request)
-    	print("hi")
-    	print(request.form['date'].replace("T"," "))
     	in_date = request.form['date'].replace("T"," ")
     	datetime_object = datetime.strptime(in_date, '%Y-%m-%d %H:%M')
-    	print(datetime_object)
     	feeders[1]["schedule"].append(datetime_object)
     	return redirect(url_for('schedule'))
     	#%m/%d/%y
@@ -328,7 +324,8 @@ def animals():
     except Exception as e:
         session.rollback()
         raise
-    return render_template("animals.html", animals=animals)
+    completed,notifications = getcompletedschedule()
+    return render_template("animals.html", animals=animals,complete=completed,notifications=notifications)
 
 @app.route("/updateanimal", methods=["POST"])
 @login_required
@@ -368,41 +365,73 @@ def addanimal():
         return redirect(url_for('animals'))
     return render_template('addanimal.html', title='Register', form=form)
 
-@app.route("/addtime", methods=["POST"])
+@app.route("/addtime/<feeder_id>", methods=["POST"])
 @login_required
-def addtime():
-	try:
-		print(datetime.now())
-		print(datetime.now() + timedelta(minutes=1))
-		global feeders
-		feeders[1]["schedule"].append(datetime.now() + timedelta(minutes=1))
-		print(feeders[1]["schedule"])
+def addtime(feeder_id):
 
-		# Create a socket object 
-		s = socket.socket()
+    feeder_id = int(feeder_id)
+    global feeders
+    feeders[feeder_id]["schedule"].append(datetime.now() + timedelta(minutes=1))
+    sendSchedule(bytes(feeders[feeder_id]["schedule"][-1].strftime("%m/%d/%Y, %H:%M:%S").encode()))
 
-		# Define the port on which you want to connect 
-		port = 12345
+    return str(datetime.now() + timedelta(minutes=1))
 
-		# connect to the server on local computer 
-		s.connect(('127.0.0.1', port))
-
-		# send a thank you message to the client.  
-		s.send(feeders[1]["schedule"][-1].strftime("%m/%d/%Y, %H:%M:%S").encode())
-
-		# close the connection 
-		s.close()
-
-	except Exception as e:
-		print("Couldn't add time")
-		print(e)
-	return str(datetime.now() + timedelta(minutes=1))
+@app.route("/deletetime", methods=["POST"])
+@login_required
+def deletetime():
+    feeder_id = int(request.form.get("feeder_id"))
+    time = request.form.get("time")
+    global feeders
+    index = feeders[feeder_id]["schedule"].index(datetime.strptime(time, "%Y-%m-%d %H:%M:%S.%f"))
+    print(index)
+    del feeders[feeder_id]["schedule"][index]
+    logger.info('%s deleted time, %s, on Feeder %s', current_user.username, time, feeder_id)
+    return redirect("/schedule")
 
 @app.route("/getschedule", methods=["GET"])
 @login_required
 def getschedule():
 	global feeders
-	return json.dumps(feeders)
+	return json.dumps(feeders,default=json_serial)
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
+
+def getcompletedschedule():
+	global feeders
+	out = {}
+	notifications = 0
+	for key,value in feeders.items():
+		out[key] = []
+		for i,date in enumerate(value["schedule"]):
+			if datetime.now() > date:
+				notifications += 1
+				out[key].append(date)
+	return out,notifications
+
+def sendSchedule(message):
+    s = socket.socket()
+
+    # Define the port on which you want to connect 
+    port = 12345
+
+    try:
+        # connect to the server on local computer 
+        s.connect(('192.168.1.131', port))
+        #s.connect(('127.0.0.1', port))
+
+        # send a thank you message to the client.  
+        s.send(message)
+
+        # close the connection 
+        s.close()
+    except Exception as e:
+        print("Couldn't send time")
+        print(e)
 
 
 if __name__ == "__main__": 

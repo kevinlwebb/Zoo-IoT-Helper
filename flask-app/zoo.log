@@ -19,3 +19,6 @@ INFO:2019-05-22 22:42:33,135:admin registered new user: keviww
 INFO:2019-05-22 22:45:50,834:admin deleted user: keviww
 INFO:2019-05-22 22:46:05,432:admin registered new user: kett
 INFO:2019-06-02 14:42:31,582:admin deleted animal: 
+INFO:2019-06-16 17:18:23,106:admin deleted time, 2019-06-16 17:19:18.807090, on Feeder 1
+INFO:2019-06-16 21:08:54,485:admin deleted time, 2019-06-16 21:08:21.650196, on Feeder 3
+INFO:2019-06-16 22:13:08,692:admin deleted time, 2019-06-16 22:11:50.434850, on Feeder 1
