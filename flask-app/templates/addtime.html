@@ -31,7 +31,18 @@
         <p>
             {{ form.date.label }}<br>
             {{ form.date() }}<br>
-        </p>
+        </p><br>
+        <p>
+        <label>Select Feeder(s)</label><br>
+        <input type="checkbox" id="Feeder 1" name="users" value="1" required="required">
+        <label for="Feeder 1">Feeder 1</label>
+
+        <input type="checkbox" id="Feeder 2" name="users" value="2">
+        <label for="Feeder 2">Feeder 2</label>
+
+        <input type="checkbox" id="Feeder 3" name="users" value="3">
+        <label for="Feeder 3">Feeder 3</label> 
+        </p><br>
         <p>{{ form.submit() }}</p>
     </form>
     </div>

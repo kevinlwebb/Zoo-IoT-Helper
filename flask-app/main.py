@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, RadioField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Required
 import os
@@ -195,13 +195,13 @@ def create_tables():
 def remove_session(ex=None):
     session.remove()
 
-@app.route('/')
 @app.route('/index')
 @login_required
 def index():
 	completed,notifications = getcompletedschedule()
 	return render_template('dashboard.html', title='Home',feeder=feeders,complete=completed,notifications=notifications)
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -273,10 +273,15 @@ def addschedule():
     form = TimeForm()
     print(form.validate_on_submit())
     if request.form:
-    	in_date = request.form['date'].replace("T"," ")
-    	datetime_object = datetime.strptime(in_date, '%Y-%m-%d %H:%M')
-    	feeders[1]["schedule"].append(datetime_object)
-    	return redirect(url_for('schedule'))
+        in_date = request.form['date'].replace("T"," ")
+        feeder_num = request.form.getlist("users")
+        print(feeder_num)
+        datetime_object = datetime.strptime(in_date, '%Y-%m-%d %H:%M')
+        for f in feeder_num:
+            feeders[int(f)]["schedule"].append(datetime_object)
+        #datetime_object = datetime.strptime(in_date, '%Y-%m-%d %H:%M')
+        #feeders[1]["schedule"].append(datetime_object)
+        return redirect(url_for('schedule'))
     	#%m/%d/%y
     	#return redirect(url_for('schedule'))
 
@@ -382,7 +387,10 @@ def deletetime():
     feeder_id = int(request.form.get("feeder_id"))
     time = request.form.get("time")
     global feeders
-    index = feeders[feeder_id]["schedule"].index(datetime.strptime(time, "%Y-%m-%d %H:%M:%S.%f"))
+    if "." in time:
+        index = feeders[feeder_id]["schedule"].index(datetime.strptime(time, "%Y-%m-%d %H:%M:%S.%f"))
+    else:
+        index = feeders[feeder_id]["schedule"].index(datetime.strptime(time, "%Y-%m-%d %H:%M:%S"))
     print(index)
     del feeders[feeder_id]["schedule"][index]
     logger.info('%s deleted time, %s, on Feeder %s', current_user.username, time, feeder_id)
@@ -421,7 +429,7 @@ def sendSchedule(message):
 
     try:
         # connect to the server on local computer 
-        s.connect(('192.168.1.131', port))
+        s.connect(('192.168.1.102', port))
         #s.connect(('127.0.0.1', port))
 
         # send a thank you message to the client.  
