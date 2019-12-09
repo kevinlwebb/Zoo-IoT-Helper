@@ -1,1 +1,1 @@
-# Zoo-IoT-Backend
+# Helper files and functions for Zoo IoT Project
